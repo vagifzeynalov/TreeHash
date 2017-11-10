@@ -1,0 +1,53 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "com.github.ben-manes:gradle-versions-plugin:${gradle_versions_plugin}"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'com.github.ben-manes.versions'
+
+version = project_version
+group = project_group
+
+sourceCompatibility = 1.8
+
+jar {
+    baseName = 'treehash'
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+springBoot {
+    executable = true
+}
+
+configurations {
+    compile.exclude group: 'ch.qos.logback'
+}
+
+dependencies {
+    // Spring
+    compile("org.springframework.boot:spring-boot-starter")
+    compile "org.springframework:spring-core:${springFrameworkVersion}"
+    compile "org.springframework:spring-context:${springFrameworkVersion}"
+
+    //logging
+    compile "org.apache.logging.log4j:log4j-api:${log4jVersion}"
+    compile "org.apache.logging.log4j:log4j-core:${log4jVersion}"
+    compile "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}"
+
+    // testing
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile "org.springframework:spring-test:${springFrameworkVersion}"
+    testCompile "junit:junit:4.12"
+}
