@@ -57,19 +57,20 @@ public class TreeHashService {
 
     @Async("asyncExecutor")
     public void getChunkSHA256HashAsync(final FileChannel fileChannel, final byte[][] hashes, final int index) throws NoSuchAlgorithmException, IOException {
-
         final ThreadContext ctx = getContext();
 
         final long position = (long) index * ONE_MB;
+        ctx.buffer.clear();
         final int length = fileChannel.read(ctx.buffer, position);
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("Read {}:{}", position, length);
         }
-        if (length > 0) {
-            ctx.md.reset();
-            ctx.md.update(ctx.buffer.array(), 0, length);
-            hashes[index] = ctx.md.digest();
+        if (length == 0 && index < hashes.length-1) {
+            LOGGER.warn("For some reason read length is zero, but it is not the end of the file. {}:{}", position, length);
         }
+        ctx.md.reset();
+        ctx.md.update(ctx.buffer.array(), 0, length);
+        hashes[index] = ctx.md.digest();
     }
 
     @Async("asyncExecutor")
